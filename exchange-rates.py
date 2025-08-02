@@ -3,7 +3,16 @@ import pandas as pd
 class Fx():
 
     def __init__(self, base: str, quote: str):
-        """Daily euro reference rates by the European Central Bank."""
+        """
+        Daily euro reference rates by the European Central Bank.
+        
+        Parameters
+        ----------
+        base: `str`
+            Base currency
+        quote: `str`
+            Quote currency
+        """
         
         self.__base = base
         self.__quote = quote
@@ -17,13 +26,22 @@ class Fx():
 
         return df
     
-    def ref_rates(self):
-        """Returns the historical exchange rates."""
+    def ref_rates(self, reverse_index: bool = False):
+        """
+        Returns the historical exchange rates.
+        
+        Paremeters
+        ----------
+        reverse_index: `bool` = False
+            Makes the index of the first row year 1999 instead of current year
+        """
 
         df = self.__calculate()
         col = df.columns[0]
         df.rename(columns={col:f"{self.__base}/{self.__quote}"},inplace=True)
 
+        if reverse_index:
+            return df[::-1]
         return df
     
     def __str__(self):
@@ -33,6 +51,10 @@ class Fx():
         """Calculates the exchange rate in terms of the base and quote currencies."""
 
         df = self.__data
+
+        # NOTICE: The FX notation is the reverse of the mathematical notation:
+        # FX: EUR/USD (1 EUR per x USD)
+        # Math: USD/EUR (x USD per 1 EUR)
 
         # Comparing currency against itself
         if self.__base == self.__quote:
@@ -103,13 +125,10 @@ if __name__ == "__main__":
     eur_usd = Fx(base="EUR",quote="USD")
     eur_jpy = Fx(base="EUR",quote="JPY")
 
-    df = eur_usd.ref_rates()
-    series = df.query('"2024-01-01" < index')
+    print(eur_usd.ref_rates(True))
+    print(eur_jpy.ref_spot())
 
-    import matplotlib.pyplot as plt
+    t1 = pd.Timestamp("2023")
+    t2 = pd.Timestamp("2025/12/31")
 
-    fig, ax = plt.subplots()
-
-    plt.plot(series)
-
-    plt.show()
+    print(eur_jpy.ref_rates(True)[t1:t2])
