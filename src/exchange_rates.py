@@ -1,10 +1,11 @@
 import pandas as pd
+import matplotlib.pyplot as plt
 
 class Fx():
 
     def __init__(self, base: str, quote: str):
         """
-        Daily euro reference rates by the European Central Bank.
+        Daily exchange rates for 31 currencies.
         
         Parameters
         ----------
@@ -17,20 +18,21 @@ class Fx():
         self.__base = base
         self.__quote = quote
 
-        self.__data = _web_scraper()
+        self.__data = self.__web_scraper()
 
-    def ref_spot(self):
+    def spot(self):
         """Returns the spot exchange rate."""
 
-        df = self.__calculate().head(1).values[0][0]
+        spot = self.__calculate().head(1).values[0][0]
+        date = self.__calculate().head(1).first_valid_index()
 
-        return df
+        return date, spot
     
-    def ref_rates(self, reverse_index: bool = False):
+    def rates(self, reverse_index: bool = False):
         """
         Returns the historical exchange rates.
         
-        Paremeters
+        Parameters
         ----------
         reverse_index: `bool` = False
             Makes the index of the first row year 1999 instead of current year
@@ -44,6 +46,35 @@ class Fx():
             return df[::-1]
         return df
     
+    def visualize(self):
+        """
+        Visualize the exchange rate.
+        """
+
+        df = self.rates(reverse_index=True)
+        mean = round(df.mean().values[0],4)
+        first_date = df.index.min()
+        last_date = df.index.max()
+        years = pd.date_range(first_date,last_date,freq="BYS")
+
+        fig, ax = plt.subplots()
+
+        ax.set_xlim(first_date,last_date)
+        ax.set_xticks(years)
+        ax.tick_params(axis="x",rotation=45)
+
+        plt.plot(df,lw=0.5,label=f"Exchange rate")
+        plt.hlines(mean,first_date,last_date,
+                   colors="gray",linestyles="--",label=f"Long term mean ({mean})")
+        
+        plt.title(f"{self.__base}/{self.__quote}")
+        plt.xlabel("Date")
+        plt.ylabel("Rate")
+
+        plt.grid(True)
+        plt.legend()
+        plt.show()
+        
     def __str__(self):
         return f"{self.__base}/{self.__quote} ({self.__labels(self.__base)}, {self.__labels(self.__quote)})"
 
@@ -71,7 +102,19 @@ class Fx():
         # Exchange rate for x/y (no EUR)
         else:
             return (df[self.__quote] / df[self.__base]).round(4).to_frame()
+
+    def __web_scraper(self):
+        """Reference exchange rates from the ECB."""
+
+        url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip?c750b601a4ceffb9c260f8007a037a27"
         
+        df = pd.read_csv(url,compression="zip")
+        index = pd.to_datetime(df["Date"])
+        df.set_index(index,inplace=True)
+        df.drop(columns=["Date","Unnamed: 42"],inplace=True)
+
+        return df
+
     def __labels(self, label: str):
         """Returns currency name."""
 
@@ -109,26 +152,5 @@ class Fx():
         
         return currency[label]
 
-def _web_scraper():
-    """Reference exchange rates from the ECB."""
-
-    url = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-hist.zip?c750b601a4ceffb9c260f8007a037a27"
-    
-    df = pd.read_csv(url,compression="zip")
-    index = pd.to_datetime(df["Date"])
-    df.set_index(index,inplace=True)
-    df.drop(columns=["Date","Unnamed: 42"],inplace=True)
-
-    return df
-
 if __name__ == "__main__":
-    eur_usd = Fx(base="EUR",quote="USD")
-    eur_jpy = Fx(base="EUR",quote="JPY")
-
-    print(eur_usd.ref_rates(True))
-    print(eur_jpy.ref_spot())
-
-    t1 = pd.Timestamp("2023")
-    t2 = pd.Timestamp("2025/12/31")
-
-    print(eur_jpy.ref_rates(True)[t1:t2])
+    pass
