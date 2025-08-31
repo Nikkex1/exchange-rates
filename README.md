@@ -62,6 +62,7 @@ The `rates` method also accepts `reverse_index = bool` as a parameter to reverse
 | 1999-01-06 00:00:00  |               1.1743 |
 | 1999-01-05 00:00:00  |                1.179 |
 | 1999-01-04 00:00:00  |               1.1789 |
+
 The `visualize` method displays the exchange rate of the given currency pair as well as the long term mean exchange rate.
 
 ```python
