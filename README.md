@@ -10,6 +10,8 @@ Web scrape historical exchange rates from the European Central Bank.
 
 - Fetch historical exchange rates from 1999 onwards for 31 currencies
 - Visualize the evolution of the rates for a quick overview
+- Supported currencies:
+  - *EUR, USD, JPY, BGN, CZK, DKK, GBP, HUF, PLN, RON, SEK, CHF, ISK, NOK, TRY, AUD, BRL, CAD, CNY, HKD, IDR, ILS, INR, KRW, MXN, MYR, NZD, PHP, SGD, THB, ZAR*
 ## Requirements & Usage
 
 ```python
@@ -51,17 +53,17 @@ The `rates` method also accepts `reverse_index = bool` as a parameter to reverse
 
 | Date                 |              EUR/USD |
 | :------------------- | -------------------: |
-| 2025-08-29 00:00:00  |               1.1658 |
-| 2025-08-28 00:00:00  |               1.1676 |
-| 2025-08-27 00:00:00  |               1.1593 |
-| 2025-08-26 00:00:00  |               1.1656 |
-| 2025-08-25 00:00:00  |               1.1697 |
+| 2025-08-29  |               1.1658 |
+| 2025-08-28  |               1.1676 |
+| 2025-08-27  |               1.1593 |
+| 2025-08-26  |               1.1656 |
+| 2025-08-25  |               1.1697 |
 | <center>...</center> | <center>...</center> |
-| 1999-01-08 00:00:00  |               1.1659 |
-| 1999-01-07 00:00:00  |               1.1632 |
-| 1999-01-06 00:00:00  |               1.1743 |
-| 1999-01-05 00:00:00  |                1.179 |
-| 1999-01-04 00:00:00  |               1.1789 |
+| 1999-01-08  |               1.1659 |
+| 1999-01-07  |               1.1632 |
+| 1999-01-06  |               1.1743 |
+| 1999-01-05  |                1.179 |
+| 1999-01-04  |               1.1789 |
 
 The `visualize` method displays the exchange rate of the given currency pair as well as the long term mean exchange rate.
 
